@@ -1,4 +1,4 @@
-# This file will be for manipulating teh data frames before they actually go into the app
+# This file will be for manipulating the data frames before they actually go into the app
 
 
 data_w <- read_xlsx("wheat_results_2018-12-11.xlsx")
@@ -18,3 +18,31 @@ dat <- rbind(data_w, data_p)
 th_left <- theme_minimal() +
   theme(axis.text = element_blank(),
         axis.title.x = element_blank())
+
+th_left_bottom <- theme_minimal() +
+  theme(axis.text = element_blank())
+
+th_bottom <- theme_minimal() +
+  theme(axis.text = element_blank(),
+        axis.title.y = element_blank())
+
+th <- theme_minimal() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank())
+
+
+# For loop to create sample data
+
+
+x <- -1
+my_sample <- c()
+
+for (i in 1:201) {
+  
+  my_sample[i] <- x
+  x = x + .01
+  
+  
+}
+
+

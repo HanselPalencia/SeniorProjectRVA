@@ -16,7 +16,7 @@ source("Data_PreProcess.R")
 
 ui <- navbarPage(title = "RVA PredictoR",
                  windowTitle = "RVA PredictoR",
-                 fluidPage(theme = shinytheme("darkly"),
+                 fluidPage(theme = shinytheme("cerulean"),
                            sidebarLayout(
                              
                              sidebarPanel(width = 3,
@@ -104,6 +104,7 @@ dataTableOutput("table1")
 server <- function(input, output, session) {
 
 
+
   
 data <- reactive({
   
@@ -139,6 +140,8 @@ cpeak_C <- reactive({
   
 })
 
+# Trough Reactives
+
 troughlm_coded <- reactive({
   
   lm(trough ~ SO(cooltime,heattime,holdtime,stirrpm,starchg), data = data())
@@ -151,6 +154,8 @@ ctrough_C <- reactive({
   
 })
 
+
+# Breakdown Reatives
 
 breaklm_coded <- reactive({
   
@@ -165,6 +170,8 @@ cbreak_C <- reactive({
 })
 
 
+# Final Reactives
+
 finallm_coded <- reactive({
   
   lm(final ~ SO(cooltime,heattime,holdtime,stirrpm,starchg), data = data())
@@ -177,11 +184,47 @@ cfinal_C <- reactive({
   
 })
 
+
+# Data Reactives
+
+COOL <- reactive({
+  
+  rep(input$cool, 201)
+  
+})
+
+HEAT <- reactive({
+  
+  rep(input$heat, 201)
+  
+})
+
+HOLD <- reactive({
+  
+  rep(input$hold, 201)
+  
+})
+
+
+STIR <- reactive({
+  
+  rep(input$stir, 201)
+  
+})
+
+
+STARCH <- reactive({
+  
+  rep(input$starch, 201)
+  
+})
+
+
   
   #### Reactive funcions #####
 
   
-#### WHEAT #####
+#### POTATO #####
   
   
 ### COOL GRAPHS #####  
@@ -191,139 +234,362 @@ output$allplots <- renderPlot({
   if (input$Starch == "Potato") {
   
 
-  p1 <- data() %>% 
-      ggplot(aes(x = as.factor(cooltime), y = peak)) +
-      #geom_line() +
-       stat_function(fun = function(x) cpeak_C()[1] + cpeak_C()[2]*x + cpeak_C()[3]*input$heat + cpeak_C()[4]*input$hold + cpeak_C()[5]*input$stir + cpeak_C()[6]*input$starch + cpeak_C()[7]*x*input$heat + cpeak_C()[8]*x*input$hold + cpeak_C()[9]*x*input$stir + cpeak_C()[10]*x*input$starch + cpeak_C()[11]*input$heat*input$hold + cpeak_C()[12]*input$heat*input$stir + cpeak_C()[13]*input$heat*input$starch + cpeak_C()[14]*input$hold*input$stir + cpeak_C()[15]*input$hold*input$starch + cpeak_C()[16]*input$stir*input$starch + cpeak_C()[17]*x^2 + cpeak_C()[18]*input$heat^2 + cpeak_C()[19]*input$hold^2 + cpeak_C()[20]*input$stir^2 + cpeak_C()[21]*input$starch^2) +
-      scale_y_continuous(limits = c(6800, 7150), breaks = seq(6900, 7050, 100)) +
-      geom_hline(aes(yintercept = 6950), lwd = .8, lty = 2, alpha = .5) +
-      geom_hline(aes(yintercept = 7050), lwd = .8, lty = 2, alpha = .5) +
-      geom_hline(aes(yintercept = 7000), lwd = .8, lty = 2, alpha = .5) +
-      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "firebrick") +
+    
+    p1 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(5000, 9000), breaks = seq(5000, 9000, 500)) +
+      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+      labs(y = "Peak") +
       th_left
-      
     
-
-  
-  
+    p2 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(5000, 9000), breaks = seq(5000, 9000, 500)) +
+      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+      th
     
-t1 <- data() %>% 
-    ggplot(aes(x = as.factor(cooltime), y = trough)) +
-    #geom_line() +
-     stat_function(fun = function(x) ctrough_C()[1] + ctrough_C()[2]*x + ctrough_C()[3]*input$heat + ctrough_C()[4]*input$hold + ctrough_C()[5]*input$stir + ctrough_C()[6]*input$starch + ctrough_C()[7]*x*input$heat + ctrough_C()[8]*x*input$hold + ctrough_C()[9]*x*input$stir + ctrough_C()[10]*x*input$starch + ctrough_C()[11]*input$heat*input$hold + ctrough_C()[12]*input$heat*input$stir + ctrough_C()[13]*input$heat*input$starch + ctrough_C()[14]*input$hold*input$stir + ctrough_C()[15]*input$hold*input$starch + ctrough_C()[16]*input$stir*input$starch + ctrough_C()[17]*x^2 + ctrough_C()[18]*input$heat^2 + ctrough_C()[19]*input$hold^2 + ctrough_C()[20]*input$stir^2 + ctrough_C()[21]*input$starch^2) +
-    scale_y_continuous(limits = c(2300, 2600), breaks = seq(2400, 2500, 100)) +
-    geom_hline(aes(yintercept = 2425), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 2450), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 2475), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "firebrick") +
-    th_left
+    p3 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(5000, 9000), breaks = seq(5000, 9000, 500)) +
+      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+      labs(y = "Peak") +
+      th
     
-  
-  
-  
-  
+    p4 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+      scale_y_continuous(limits = c(5000, 9000), breaks = seq(5000, 9000, 500)) +
+      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+      labs(y = "Peak") +
+      th
     
- b1 <- data() %>% 
-    ggplot(aes(x = as.factor(cooltime), y = breakdown)) +
-    #geom_line() +
-     stat_function(fun = function(x) cbreak_C()[1] + cbreak_C()[2]*x + cbreak_C()[3]*input$heat + cbreak_C()[4]*input$hold + cbreak_C()[5]*input$stir + cbreak_C()[6]*input$starch + cbreak_C()[7]*x*input$heat + cbreak_C()[8]*x*input$hold + cbreak_C()[9]*x*input$stir + cbreak_C()[10]*x*input$starch + cbreak_C()[11]*input$heat*input$hold + cbreak_C()[12]*input$heat*input$stir + cbreak_C()[13]*input$heat*input$starch + cbreak_C()[14]*input$hold*input$stir + cbreak_C()[15]*input$hold*input$starch + cbreak_C()[16]*input$stir*input$starch + cbreak_C()[17]*x^2 + cbreak_C()[18]*input$heat^2 + cbreak_C()[19]*input$hold^2 + cbreak_C()[20]*input$stir^2 + cbreak_C()[21]*input$starch^2) +
-    scale_y_continuous(limits = c(4350, 4750), breaks = seq(4450, 4650, 100)) +
-    geom_hline(aes(yintercept = 4500), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 4600), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 4550), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "firebrick") +
-    th_left
+    p5 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+      scale_y_continuous(limits = c(5000, 9000), breaks = seq(5000, 9000, 500)) +
+      geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+      labs(y = "Peak") +
+      th
     
-  
-  
-  
     
-  f1 <-  data() %>% 
-    ggplot(aes(x = as.factor(cooltime), y = final)) +
-    #geom_line() +
-     stat_function(fun = function(x) cfinal_C()[1] + cfinal_C()[2]*x + cfinal_C()[3]*input$heat + cfinal_C()[4]*input$hold + cfinal_C()[5]*input$stir + cfinal_C()[6]*input$starch + cfinal_C()[7]*x*input$heat + cfinal_C()[8]*x*input$hold + cfinal_C()[9]*x*input$stir + cfinal_C()[10]*x*input$starch + cfinal_C()[11]*input$heat*input$hold + cfinal_C()[12]*input$heat*input$stir + cfinal_C()[13]*input$heat*input$starch + cfinal_C()[14]*input$hold*input$stir + cfinal_C()[15]*input$hold*input$starch + cfinal_C()[16]*input$stir*input$starch + cfinal_C()[17]*x^2 + cfinal_C()[18]*input$heat^2 + cfinal_C()[19]*input$hold^2 + cfinal_C()[20]*input$stir^2 + cfinal_C()[21]*input$starch^2) +
-    scale_y_continuous(limits = c(2825, 3150), breaks = seq(2925, 3050, 100)) +
-    geom_hline(aes(yintercept = 2975), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 3025), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = 3000), lwd = .8, lty = 2, alpha = .5) +
-    geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "firebrick") +
-    th_left
-  
-  
     
-    ggpubr::ggarrange(p1, t1, b1, f1, ncol = 1 , nrow = 4)
+    #### TROUGH GRAPHS ####
+    
+    t1 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1500, 5000), breaks = seq(1500, 5000, 500)) +
+      geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+      labs(y = "Trough") +
+      th_left
+    
+    t2 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1500, 5000), breaks = seq(1500, 5000, 500)) +
+      geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+      labs(y = "Trough") +
+      th
+    
+    t3 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1500, 5000), breaks = seq(1500, 5000, 500)) +
+      geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+      labs(y = "Trough") +
+      th
+    
+    t4 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1500, 5000), breaks = seq(1500, 5000, 500)) +
+      geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+      labs(y = "Trough") +
+      th
+    
+    t5 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+      scale_y_continuous(limits = c(1500, 5000), breaks = seq(1500, 5000, 500)) +
+      geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+      labs(y = "Trough") +
+      th
+    
+    
+    #### BREAKDOWN GRAPHS #####   
+    
+    b1 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(2500, 6000), breaks = seq(2500, 6000, 500)) +
+      geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+      labs(y = "Breakdown") +
+      th_left
+    
+    b2 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(2500, 6000), breaks = seq(2500, 6000, 500)) +
+      geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+      labs(y = "Breakdown") +
+      th
+    
+    b3 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(2500, 6000), breaks = seq(2500, 6000, 500)) +
+      geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+      labs(y = "Breakdown") +
+      th
+    
+    b4 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+      scale_y_continuous(limits = c(2500, 6000), breaks = seq(2500, 6000, 500)) +
+      geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+      labs(y = "Breakdown") +
+      th
+    
+    b5 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+      scale_y_continuous(limits = c(2500, 6000), breaks = seq(2500, 6000, 500)) +
+      geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+      labs(y = "Breakdown") +
+      th
+    
+    
+    
+    ##### FINAL GRAPHS #####    
+    
+    f1 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1955, 5455), breaks = seq(1955, 5455, 750)) +
+      geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+      labs(y = "Final", x = "Cool Time") +
+      th_left_bottom
+    
+    f2 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1955, 5455), breaks = seq(1955, 5455, 750)) +
+      geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+      labs(y = "Final", x = "Hold Time") +
+      th_bottom
+    
+    f3 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1955, 5455), breaks = seq(1955, 5455, 750)) +
+      geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+      labs(y = "Final", x = "Heat Time") +
+      th_bottom
+    
+    f4 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+      scale_y_continuous(limits = c(1955, 5455), breaks = seq(1955, 5455, 750)) +
+      geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+      labs(y = "Final", x = "Stir RPM") +
+      th_bottom
+    
+    f5 <- ggplot() +
+      geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+      scale_y_continuous(limits = c(1955, 5455), breaks = seq(1955, 5455, 750)) +
+      geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+      geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+      labs(y = "Final", x = "Starch (g)") +
+      th_bottom
+    
+    
+    
+    ggpubr::ggarrange(p1, p2, p3, p4, p5, t1, t2, t3, t4, t5, b1, b2, b3, b4, b5, f1, f2, f3, f4, f5, ncol = 5 , nrow = 4)
     
     
   }
   
+##### WHEAT #####
+  
   
   else if (input$Starch == "Wheat") {
     
-     p1 <- data() %>% 
-       ggplot(aes(x = as.factor(cooltime), y = peak)) +
-       #geom_line() +
-       stat_function(fun = function(x) cpeak_C()[1] + cpeak_C()[2]*x + cpeak_C()[3]*input$heat + cpeak_C()[4]*input$hold + cpeak_C()[5]*input$stir + cpeak_C()[6]*input$starch + cpeak_C()[7]*x*input$heat + cpeak_C()[8]*x*input$hold + cpeak_C()[9]*x*input$stir + cpeak_C()[10]*x*input$starch + cpeak_C()[11]*input$heat*input$hold + cpeak_C()[12]*input$heat*input$stir + cpeak_C()[13]*input$heat*input$starch + cpeak_C()[14]*input$hold*input$stir + cpeak_C()[15]*input$hold*input$starch + cpeak_C()[16]*input$stir*input$starch + cpeak_C()[17]*x^2 + cpeak_C()[18]*input$heat^2 + cpeak_C()[19]*input$hold^2 + cpeak_C()[20]*input$stir^2 + cpeak_C()[21]*input$starch^2) +
-       scale_y_continuous(limits = c(1100, 1500), breaks = seq(1100, 1500, 100)) +
-       scale_x_discrete(limits = c(-1,1), breaks = seq(-1, 1, 1)) +
-       geom_hline(aes(yintercept = 1200), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1300), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1400), lwd = .8, lty = 2, alpha = .5) +
+     p1 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(900, 1800), breaks = seq(900, 1800, 200)) +
        geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+       labs(y = "Peak") +
        th_left
     
+     p2 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(900, 1800), breaks = seq(900, 1800, 200)) +
+       geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+       th
+     
+     p3 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(900, 1800), breaks = seq(900, 1800, 200)) +
+       geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+       labs(y = "Peak") +
+       th
+     
+     p4 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+       scale_y_continuous(limits = c(900, 1800), breaks = seq(900, 1800, 200)) +
+       geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+       labs(y = "Peak") +
+       th
+     
+     p5 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(peaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+       scale_y_continuous(limits = c(900, 1800), breaks = seq(900, 1800, 200)) +
+       geom_hline(aes(yintercept = predict(peaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+       labs(y = "Peak") +
+       th
     
     
     
+#### TROUGH GRAPHS ####
     
-    
-     t1 <- data() %>% 
-       ggplot(aes(x = as.factor(cooltime), y = trough)) +
-       #geom_line() +
-       stat_function(fun = function(x) ctrough_C()[1] + ctrough_C()[2]*x + ctrough_C()[3]*input$heat + ctrough_C()[4]*input$hold + ctrough_C()[5]*input$stir + ctrough_C()[6]*input$starch + ctrough_C()[7]*x*input$heat + ctrough_C()[8]*x*input$hold + ctrough_C()[9]*x*input$stir + ctrough_C()[10]*x*input$starch + ctrough_C()[11]*input$heat*input$hold + ctrough_C()[12]*input$heat*input$stir + ctrough_C()[13]*input$heat*input$starch + ctrough_C()[14]*input$hold*input$stir + ctrough_C()[15]*input$hold*input$starch + ctrough_C()[16]*input$stir*input$starch + ctrough_C()[17]*x^2 + ctrough_C()[18]*input$heat^2 + ctrough_C()[19]*input$hold^2 + ctrough_C()[20]*input$stir^2 + ctrough_C()[21]*input$starch^2) +
-       scale_y_continuous(limits = c(900, 1300), breaks = seq(900, 1300, 100)) +
-       scale_x_discrete(limits = c(-1,1), breaks = seq(-1, 1, 1)) +
-       geom_hline(aes(yintercept = 1000), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1200), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1100), lwd = .8, lty = 2, alpha = .5) +
+     t1 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(700, 1600), breaks = seq(700, 1600, 200)) +
        geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+       labs(y = "Trough") +
        th_left
+     
+     t2 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(700, 1600), breaks = seq(700, 1600, 200)) +
+       geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+       labs(y = "Trough") +
+       th
+     
+     t3 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(700, 1600), breaks = seq(700, 1600, 200)) +
+       geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+       labs(y = "Trough") +
+       th
+     
+     t4 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+       scale_y_continuous(limits = c(700, 1600), breaks = seq(700, 1600, 200)) +
+       geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+       labs(y = "Trough") +
+       th
+    
+     t5 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(troughlm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+       scale_y_continuous(limits = c(700, 1600), breaks = seq(700, 1600, 200)) +
+       geom_hline(aes(yintercept = predict(troughlm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+       labs(y = "Trough") +
+       th
     
     
+#### BREAKDOWN GRAPHS #####   
     
-    
-    
-    
-     b1 <- data() %>% 
-       ggplot(aes(x = as.factor(cooltime), y = breakdown)) +
-       #geom_line() +
-       stat_function(fun = function(x) cbreak_C()[1] + cbreak_C()[2]*x + cbreak_C()[3]*input$heat + cbreak_C()[4]*input$hold + cbreak_C()[5]*input$stir + cbreak_C()[6]*input$starch + cbreak_C()[7]*x*input$heat + cbreak_C()[8]*x*input$hold + cbreak_C()[9]*x*input$stir + cbreak_C()[10]*x*input$starch + cbreak_C()[11]*input$heat*input$hold + cbreak_C()[12]*input$heat*input$stir + cbreak_C()[13]*input$heat*input$starch + cbreak_C()[14]*input$hold*input$stir + cbreak_C()[15]*input$hold*input$starch + cbreak_C()[16]*input$stir*input$starch + cbreak_C()[17]*x^2 + cbreak_C()[18]*input$heat^2 + cbreak_C()[19]*input$hold^2 + cbreak_C()[20]*input$stir^2 + cbreak_C()[21]*input$starch^2) +
-       scale_y_continuous(limits = c(75, 275), breaks = seq(75, 275, 50)) +
-       scale_x_discrete(limits = c(-1,1), breaks = seq(-1, 1, 1)) +
-       geom_hline(aes(yintercept = 75), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 275), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 175), lwd = .8, lty = 2, alpha = .5) +
+     b1 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(130, 230), breaks = seq(130, 230, 20)) +
        geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+       labs(y = "Breakdown") +
        th_left
+     
+     b2 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(130, 230), breaks = seq(130, 230, 20)) +
+       geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+       labs(y = "Breakdown") +
+       th
+     
+     b3 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(130, 230), breaks = seq(130, 230, 20)) +
+       geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+       labs(y = "Breakdown") +
+       th
+     
+     b4 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+       scale_y_continuous(limits = c(130, 230), breaks = seq(130, 230, 20)) +
+       geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+       labs(y = "Breakdown") +
+       th
+     
+     b5 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(breaklm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+       scale_y_continuous(limits = c(130, 230), breaks = seq(130, 230, 20)) +
+       geom_hline(aes(yintercept = predict(breaklm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+       labs(y = "Breakdown") +
+       th
     
     
     
-    
-    
-     f1 <-  data() %>% 
-       ggplot(aes(x = as.factor(cooltime), y = final)) +
-       #geom_line() +
-       stat_function(fun = function(x) cfinal_C()[1] + cfinal_C()[2]*x + cfinal_C()[3]*input$heat + cfinal_C()[4]*input$hold + cfinal_C()[5]*input$stir + cfinal_C()[6]*input$starch + cfinal_C()[7]*x*input$heat + cfinal_C()[8]*x*input$hold + cfinal_C()[9]*x*input$stir + cfinal_C()[10]*x*input$starch + cfinal_C()[11]*input$heat*input$hold + cfinal_C()[12]*input$heat*input$stir + cfinal_C()[13]*input$heat*input$starch + cfinal_C()[14]*input$hold*input$stir + cfinal_C()[15]*input$hold*input$starch + cfinal_C()[16]*input$stir*input$starch + cfinal_C()[17]*x^2 + cfinal_C()[18]*input$heat^2 + cfinal_C()[19]*input$hold^2 + cfinal_C()[20]*input$stir^2 + cfinal_C()[21]*input$starch^2) +
-       scale_y_continuous(limits = c(1000, 1400), breaks = seq(1000, 1400, 100)) +
-       scale_x_discrete(limits = c(-1,1), breaks = seq(-1, 1, 1)) +
-       geom_hline(aes(yintercept = 1100), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1300), lwd = .8, lty = 2, alpha = .5) +
-       geom_hline(aes(yintercept = 1200), lwd = .8, lty = 2, alpha = .5) +
+##### FINAL GRAPHS #####    
+   
+     f1 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = my_sample, holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(800, 1700), breaks = seq(800, 1700, 100)) +
        geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
-         th_left
+       geom_vline(aes(xintercept = input$cool), alpha = .5, color = "red") +
+       labs(y = "Final", x = "Cool Time") +
+         th_left_bottom
+     
+     f2 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = my_sample, heattime = HEAT(), stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(800, 1700), breaks = seq(800, 1700, 100)) +
+       geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$heat), alpha = .5, color = "red") +
+       labs(y = "Final", x = "Hold Time") +
+       th_bottom
+     
+     f3 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = my_sample, stirrpm = STIR(), starchg = STARCH())))) +
+       scale_y_continuous(limits = c(800, 1700), breaks = seq(800, 1700, 100)) +
+       geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$hold), alpha = .5, color = "red") +
+       labs(y = "Final", x = "Heat Time") +
+       th_bottom
+     
+     f4 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = my_sample, starchg = STARCH())))) +
+       scale_y_continuous(limits = c(800, 1700), breaks = seq(800, 1700, 100)) +
+       geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$stir), alpha = .5, color = "red") +
+       labs(y = "Final", x = "Stir RPM") +
+       th_bottom
+     
+     f5 <- ggplot() +
+       geom_line(aes(x = my_sample, y = predict(finallm_coded(), newdata = data.frame(cooltime = COOL(), holdtime = HOLD(), heattime = HEAT(), stirrpm = STIR(), starchg = my_sample)))) +
+       scale_y_continuous(limits = c(800, 1700), breaks = seq(800, 1700, 100)) +
+       geom_hline(aes(yintercept = predict(finallm_coded(), newdata = data.frame(cooltime = input$cool, heattime = input$heat , holdtime = input$hold, stirrpm = input$stir, starchg = input$starch))), lwd = 1, col = "steelblue") +
+       geom_vline(aes(xintercept = input$starch), alpha = .5, color = "red") +
+       labs(y = "Final", x = "Starch (g)") +
+       th_bottom
     
     
     
-    ggpubr::ggarrange(p1, t1, b1, f1, ncol = 1 , nrow = 4)
+    ggpubr::ggarrange(p1, p2, p3, p4, p5, t1, t2, t3, t4, t5, b1, b2, b3, b4, b5, f1, f2, f3, f4, f5, ncol = 5 , nrow = 4)
     
     
   }
