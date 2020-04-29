@@ -1,14 +1,14 @@
 dat %>% 
   filter(Starch == "Wheat") %>% 
-  plot_ly(x = ~starchg, y = ~stirrpm, z = ~heattime, type = "contour")
+  plot_ly(x = ~starchg, y = ~stirrpm, z = ~peak, type = "contour")
 
 dat %>% 
   filter(Starch == "Wheat") %>% 
-  plot_ly(x = ~starchg, y = ~stirrpm, z = ~holdtime, type = "contour")
+  plot_ly(x = ~starchg, y = ~stirrpm, z = ~peak, type = "contour")
 
 dat %>% 
   filter(Starch == "Wheat") %>% 
-  plot_ly(x = ~starchg, y = ~stirrpm, z = ~cooltime, type = "contour")
+  plot_ly(x = ~starchg, y = ~stirrpm, z = ~peak, type = "contour")
 
 
 dat %>% 

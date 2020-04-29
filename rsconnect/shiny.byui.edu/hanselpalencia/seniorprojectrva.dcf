@@ -5,8 +5,8 @@ account: hanselpalencia
 server: shiny.byui.edu
 hostUrl: https://shiny.byui.edu/__api__
 appId: 864
-bundleId: 1855
+bundleId: 1917
 url: https://shiny.byui.edu/content/864/
-when: 1585342043.59636
+when: 1586290457.87888
 asMultiple: FALSE
 asStatic: FALSE

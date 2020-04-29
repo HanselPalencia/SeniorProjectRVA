@@ -21,6 +21,22 @@ ui <- navbarPage(title = "RVA PredictoR",
                              
                              sidebarPanel(width = 3,
                                           
+                                          conditionalPanel(condition = "input.tabs = 2",
+                                            pickerInput(input = "var1",
+                                                        label = "Choose an X Variable",
+                                                        choices = c(1,2,3,4,5),
+                                                        selected = 1                                                                           ),
+                                                           
+                                                           
+                                                           
+                                            pickerInput(input = "var2",
+                                                        label = "Choose A Y Variable",
+                                                        choices = c(1,2,3,4,5),
+                                                        selected = 2
+                                            )
+                                          ),
+                                          
+                                          
                                           wellPanel(
                                             pickerInput(inputId = "Starch",
                                                         label = "Choose Your Starch",
@@ -91,6 +107,13 @@ dataTableOutput("table2")
                                                            fluidRow(
                                                              
                                                              plotOutput("contour")
+                                                           )),
+
+                                                  tabPanel("Suggested Outputs",
+                                                           fluidRow(
+                                                             
+                                                             dataTableOutput("table3")
+                                                             
                                                            ))
 
                                               
@@ -626,9 +649,202 @@ DT::datatable(test)
   
   
 cdat <- reactive({
+  
+  
+  req(input$var1, input$var2)
+  
+  
+  if ((input$var1 == 1 & input$var2 == 2) | (input$var1 == 2 & input$var2 == 1)) {
+
+    cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH())
+  
+  }
+  
+  else if (input$var1 == 1 & input$var2 == 3 | input$var1 == 3 & input$var2 == 1) {
+    
+    test <- data.frame(cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), expand.grid(my_sample, my_sample), STARCH()))
+    
+    test2[,3] <- test[,2]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(1,4)]
+    
+    test2 <- test2[,c(2,3,5)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(1,3,4,2,5)]
+    
+    #print(test)
+    
+    return(test)
+    
+  }
+  
+  
+  else if (input$var1 == 1 & input$var2 == 4 | input$var1 == 4 & input$var2 == 1) {
+    
+    test <- data.frame(cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), expand.grid(my_sample, my_sample), STARCH()))
+    
+    #test2[,3] <- test[,2]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(1,3)]
+    
+    test2 <- test2[,c(2,4,5)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(1,3,2,4,5)]
+    
+    #print(test)
+    
+    return(test)
+    
+    
+  }
+  
+  
+  else if (input$var1 == 1 & input$var2 == 5 | input$var1 == 5 & input$var2 == 1) {
+    
+    
+    test <- data.frame(cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), HOLD(), expand.grid(my_sample, my_sample)))
+    
+    #test2[,3] <- test[,2]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(1,3,4)]
+    
+    test2 <- test2[,c(2,5)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(1,4,2,3,5)]
+    
+    #print(test)
+    
+    return(test)
+    
+    
+    
+    
+  }
+  
+  
+  else if (input$var1 == 2 & input$var2 == 3 | input$var1 == 3 & input$var2 == 2) {
+    
+    cbind(COOL(), expand.grid(my_sample, my_sample), STIR(), STARCH())
+    
+  }
+  
+  
+  
+  else if (input$var1 == 2 & input$var2 == 4 | input$var1 == 4 & input$var2 == 2) {
+    
+    test <- data.frame(cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), HOLD(), expand.grid(my_sample, my_sample)))
+    
+    #test2[,3] <- test[,2]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(2,3,5)]
+    
+    test2 <- test2[,c(1,4)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(4,1,2,5,3)]
+    
+    #print(test)
+    
+    return(test)
+    
+    
+  }
+  
+  
+  else if (input$var1 == 2 & input$var2 == 5 | input$var1 == 5 & input$var2 == 2) {
+    
+    
+    test <- data.frame(cbind(expand.grid(my_sample, my_sample), HOLD(), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), HOLD(), expand.grid(my_sample, my_sample)))
+    
+    test2[,5] <- test[,1]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(2,3,4)]
+    
+    test2 <- test2[,c(1,5)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(4,1,2,3,5)]
+    
+    #print(test)
+    
+    return(test)
+    
+    
+  }
+  
+  
+  else if (input$var1 == 3 & input$var2 == 4 | input$var1 == 4 & input$var2 == 3) {
+    
+    cbind(COOL(), HEAT(), expand.grid(my_sample, my_sample), STARCH())
+    
+  }
+  
+  
+  else if (input$var1 == 3 & input$var2 == 5 | input$var1 == 5 & input$var2 == 3) {
+    
+    
+    test <- data.frame(cbind(COOL(), expand.grid(my_sample, my_sample), STIR(), STARCH()))
+    test2 <- data.frame(cbind(COOL(), HEAT(), HOLD(), expand.grid(my_sample, my_sample)))
+    
+    test[,3] <- test[,2]
+    
+    #print(test)
+    #print(test2)
+    
+    test <- test[,c(3,4)]
+    
+    test2 <- test2[,c(1,2,5)]
+    
+    test <- cbind(test, test2)
+    
+    test <- test[,c(3,4,1,2,5)]
+    
+    #print(test)
+    
+    return(test)
+    
+    
+  }
+  
+  
+  
+  else if (input$var1 == 4 & input$var2 == 5 | input$var1 == 5 & input$var2 == 4) {
     
     cbind(COOL(), HEAT(), HOLD(), expand.grid(my_sample, my_sample))
+    
+  }
   
+  
+  
+    
   })
   
 
@@ -645,8 +861,6 @@ tpred <- reactive({
   
 })
 
-
-
 bpred <- reactive({
   
   predict(breaklm_coded(), newdata = data.frame(cooltime = cdat()[,1], heattime = cdat()[,2], holdtime = cdat()[,3], stirrpm = cdat()[,4], starchg = cdat()[,5])) 
@@ -659,7 +873,7 @@ fpred <- reactive({
   predict(finallm_coded(), newdata = data.frame(cooltime = cdat()[,1], heattime = cdat()[,2], holdtime = cdat()[,3], stirrpm = cdat()[,4], starchg = cdat()[,5]))  
   
 })
-  
+
   
 full_cdat <- reactive({
   
@@ -695,7 +909,6 @@ full_cdat <- reactive({
 filtered_full_cdat <- reactive({
   
   
-  
   req(input$Starch)
   
   if (input$Starch == "Potato") {
@@ -714,7 +927,7 @@ filtered_full_cdat <- reactive({
                (df == "breakdown" & between(z, 4500, 4600)) |
                (df == "final" & between(z, (2975+40), (3025+40))))
     
-  }
+  } 
   
   
 })
@@ -725,28 +938,308 @@ filtered_full_cdat <- reactive({
 output$contour <- renderPlot({
   
   
+  
+  if (input$var1 == 1 & input$var2 == 2) {
+  
+  
    filtered_full_cdat() %>% 
      ggplot() +
-     geom_contour(aes(x = stirrpm, starchg, z = z, color = df)) +
+     geom_contour(aes(x = cooltime, heattime, z = z, color = df)) +
      theme_minimal()
+  
+  }
+  
+  else if (input$var1 == 2 & input$var2 == 1) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = heattime, cooltime, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 1 & input$var2 == 3) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = cooltime, holdtime, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  else if (input$var1 == 3 & input$var2 == 1) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = holdtime, cooltime, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 1 & input$var2 == 4) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = cooltime, stirrpm, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  else if (input$var1 == 4 & input$var2 == 1) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = stirrpm, cooltime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 1 & input$var2 == 5) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = cooltime, starchg, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 5 & input$var2 == 1) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = starchg, cooltime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  
+  else if (input$var1 == 2 & input$var2 == 3) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = heattime, holdtime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 3 & input$var2 == 2) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = holdtime, heattime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  
+  else if (input$var1 == 2 & input$var2 == 4) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = heattime, stirrpm, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 4 & input$var2 == 2) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = stirrpm, heattime, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 2 & input$var2 == 5) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = heattime, starchg, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 5 & input$var2 == 1) {
+    
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = starchg, heattime, z = z, color = df)) +
+      theme_minimal()
+    
+    
+  }
+  
+  
+  else if (input$var1 == 3 & input$var2 == 4) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = holdtime, stirrpm, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 4 & input$var2 == 3) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = stirrpm, holdtime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 3 & input$var2 == 5) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = holdtime, starchg, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  
+  else if (input$var1 == 5 & input$var2 == 3) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = starchg, holdtime, z = z, color = df)) +
+      theme_minimal()
+    
+  }
+  
+  
+  else if (input$var1 == 4 & input$var2 == 5) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = stirrpm, starchg, z = z, color = df)) +
+      theme_minimal()
+  }
+  
+  
+  else if (input$var1 == 5 & input$var2 == 4) {
+    
+    filtered_full_cdat() %>% 
+      ggplot() +
+      geom_contour(aes(x = starchg, stirrpm, z = z, color = df)) +
+      theme_minimal()
+  }
   
   
   
 })
 
+
+# pspred <- reactive({
+#   
+#   predict(peaklm_coded(), newdata = data.frame(cooltime = spred[,1], heattime = spred[,2], holdtime = spred[,3], stirrpm = spred[,4], starchg = spred[,5])) 
+#   
+# })
+# 
+# 
+# tspred <- reactive({
+#   
+#   predict(troughlm_coded(), newdata = data.frame(cooltime = spred[,1], heattime = spred[,2], holdtime = spred[,3], stirrpm = spred[,4], starchg = spred[,5])) 
+#   
+# })
+# 
+# 
+# 
+# bspred <- reactive({
+#   
+#   predict(breaklm_coded(), newdata = data.frame(cooltime = spred[,1], heattime = spred[,2], holdtime = spred[,3], stirrpm = spred[,4], starchg = spred[,5])) 
+#   
+#   
+# })
+# 
+# fspred <- reactive({
+#   
+#   predict(finallm_coded(), newdata = data.frame(cooltime = spred[,1], heattime = spred[,2], holdtime = spred[,3], stirrpm = spred[,4], starchg = spred[,5]))  
+#   
+# })
+
+
+
+# spredictor <- reactive({
+# 
+# pdat <- data.frame(cbind(spred, pspred()))
+# tdat <- data.frame(cbind(spred, tspred()))
+# bdat <- data.frame(cbind(spred, bspred()))
+# fdat <- data.frame(cbind(spred, fspred()))
+# 
+# names(pdat) <- c("cooltime", "heattime", "holdtime", "stirrpm", "starchg")
+# names(tdat) <- c("cooltime", "heattime", "holdtime", "stirrpm", "starchg")
+# names(bdat) <- c("cooltime", "heattime", "holdtime", "stirrpm", "starchg")
+# names(fdat) <- c("cooltime", "heattime", "holdtime", "stirrpm", "starchg")
+# 
+# pdat$df <- "peak"
+# tdat$df <- "trough"
+# bdat$df <- "breakdown"
+# fdat$df <- "final"
+# 
+# names(pdat)[6] <- "z"
+# names(tdat)[6] <- "z"
+# names(bdat)[6] <- "z"
+# names(fdat)[6] <- "z"
+# 
+# test <- rbind(pdat, tdat, bdat, fdat)
+# 
+# test[,c(1,2,3,4,5)] <- round(test[,c(1,2,3,4,5)], 2)
+# 
+# return(test)
+# 
+# })
+
+
+
+# output$table3 <- DT::renderDataTable({
+#   
+#   if (input$Starch == "Potato") {
+#     
+#     spredictor() %>% 
+#       filter((df == "peak" & between(z, (6850),(7150))) | 
+#                (df == "trough" & between(z, 2325,2575)) |
+#                (df == "breakdown" & between(z, 4400, 4700)) |
+#                (df == "final" & between(z, (2875), (3125))))
+#     
+#     
+#     
+#   }
+  
+
+  
+##})
+
   
   
   
-  
-  
 
   
-
-
-
-
-
-
   
   
 }

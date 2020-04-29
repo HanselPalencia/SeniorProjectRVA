@@ -48,4 +48,30 @@ for (i in 1:201) {
 
 
 
+# x <- -1
+# my_sample_small <- c()
+# 
+# for (i in 1:11) {
+#   
+#   my_sample_small[i] <- x
+#   x = x + .2
+#   
+# }
+# 
+# 
+# spred <- expand.grid(my_sample_small,my_sample_small,my_sample_small,my_sample_small,my_sample_small)
+# 
+# names(spred) <- c("cooltime", "heattime", "holdtime", "stirrpm", "starchg")
+
+
+
+
+
+
+
+
+
+
+
+
 
